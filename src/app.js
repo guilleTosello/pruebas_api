@@ -1,12 +1,19 @@
 const express = require('express');
-
+const mongoose = require('mongoose');
 const { auth } = require("express-oauth2-jwt-bearer");
 
+require('dotenv').config();
+
 const autenticacion = auth({
-    audience: "http://localhost:3000/api/productos",
-    issuerBaseURL: "https://dev-utn-frc-iaew.auth0.com/",
+    audience: process.env.OAUTH_AUDIENCE,
+    issuerBaseURL: process.env.OAUTH_URL,
     tokenSigningAlg: "RS256",
-    });
+});
+
+mongoose.connect(process.env.MONGO_DB, {
+    useUnifiedTopology: true,
+    useNewUrlParser: true,
+})
 
 const app = express();
 app.use(express.json());
@@ -21,6 +28,6 @@ app.use('/libros', autenticacion, librosRouter);
 
 app.use(errorHandler);
 
-app.listen(3000, ()=> {
+app.listen(3000, () => {
     console.log('servidor escuchando en el puerto 3000')
 })
